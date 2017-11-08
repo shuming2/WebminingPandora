@@ -15,8 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
+
+from .settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
-    url(r'^collection/', include('productAPI.urls')),
+    url(r'^', include('productAPI.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+# Image URL
+# From Paulo Bu
+# https://stackoverflow.com/questions/16196603/images-from-imagefield-in-django-dont-load-in-template
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
