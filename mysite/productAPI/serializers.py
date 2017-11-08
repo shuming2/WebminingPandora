@@ -8,12 +8,40 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         fields = "__all__"
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
+
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = "__all__"
 
-#TODO: other group model serializer
+class MetalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Metal
+        fields = "__all__"
+
+class MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = "__all__"
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
+        fields = "__all__"
+
+class StoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stone
+        fields = "__all__"
+
+class ThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Theme
+        fields = "__all__"
 
 
 

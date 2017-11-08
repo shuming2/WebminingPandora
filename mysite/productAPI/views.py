@@ -1,12 +1,9 @@
-import urllib
-
 from django.http import HttpResponse
 
 import requests
 import os
 import shutil
 from datetime import datetime
-import base64
 import json
 
 from .models import *
@@ -36,7 +33,6 @@ def updateGroupData(request):
         groupName = dic["@key"]
         if groupName in updateDic.keys():
             groupModel = updateDic[groupName]
-            #groupModel.objects.all().delete() # Clear the old data
             for itemDic in dic["item"]:
                 groupModel.objects.update_or_create(
                     key=itemDic["@key"],
@@ -52,16 +48,11 @@ def updateProductData(request):
     r = getDataFromOfficialWebsite()
     pd = r["data"]["products"]["product"]
 
-    #Product.objects.all().delete()
-    i=0
     for prod in pd:
         id = prod["@id"]
         downloadImage(id)
 
         processRaw(prod)
-        i+=1
-        if i==10:
-            break
 
     response = str(Product.objects.count()) + " product data has been updated successfully"
     return HttpResponse(response)
@@ -115,24 +106,21 @@ def downloadImage(id):
 
 
 def processRaw(prod):
-    # Possible multiple values
-    # subcol stone theme
-
     Product.objects.update_or_create(
         id=prod["@id"],
         defaults={'name': prod["@name"],
                   'baseid': prod["@baseid"],
                   'state': prod["@state"],
                   'url': prod["@url"],
-                  'collection': Collection.objects.get(key=prod["@col"]).value,
-                  'category': Category.objects.get(key=prod["@cat"]).value,
-                  'subcollection': handleMultipleInputs(prod, "@subcol", Collection),
-                  'subcategory': SubCategory.objects.get(key=prod["@subcat"]).value,
-                  'metal': Metal.objects.get(key=prod["@metal"]).value,
-                  'material': Material.objects.get(key=prod["@material"]).value,
-                  'color': Color.objects.get(key=prod["@color"]).value,
-                  'theme': handleMultipleInputs(prod, "@theme", Theme),
-                  'stone': handleMultipleInputs(prod, "@stone", Stone),
+                  'collection': handleInputs(prod, "@col", Collection),
+                  'category': handleInputs(prod, "@cat", Category),
+                  'subcollection': handleInputs(prod, "@subcol", Collection),
+                  'subcategory': handleInputs(prod, "@subcat", SubCategory),
+                  'metal': handleInputs(prod, "@metal", Metal),
+                  'material': handleInputs(prod, "@material", Material),
+                  'color': handleInputs(prod, "@color", Color),
+                  'theme': handleInputs(prod, "@theme", Theme),
+                  'stone': handleInputs(prod, "@stone", Stone),
                   'price': int(prod["@price"]),
                   'newest': True if prod["@newest"] == "true" else False,
                   'description': prod["desc"]["#cdata-section"],
@@ -141,10 +129,12 @@ def processRaw(prod):
     )
 
 
-def handleMultipleInputs(prod, key, groupModel):
+def handleInputs(prod, key, groupModel):
     result = []
-    if prod[key]:
-        for num in prod[key].split("|"):
+    for num in prod[key].split("|"):
+        try:
             object = groupModel.objects.get(key=num)
             result.append(object.value)
+        except:
+            continue
     return ", ".join(result)
