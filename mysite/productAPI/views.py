@@ -61,9 +61,9 @@ def updateProductData(request):
 # Help Function
 def getDataFromOfficialWebsite():
     ###################TODO  delete following code
-    if 1:
-        data = open("../data/data.txt", "r").readline()
-        return json.loads(data)
+    # if 1:
+    #     data = open("../data/data.txt", "r").readline()
+    #     return json.loads(data)
     ####################
     r = requests.get("http://www.pandora.net/en-ca/feeds/products/json/")
     return r.json()
@@ -71,8 +71,8 @@ def getDataFromOfficialWebsite():
 
 def backupDB():
     ###################TODO  delete following code
-    if 1:
-        return
+    # if 1:
+    #     return
     ####################
     if not os.path.exists(os.getcwd() + "/backup"):
         os.makedirs(os.getcwd() + "/backup")
